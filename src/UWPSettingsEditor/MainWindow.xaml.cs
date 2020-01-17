@@ -3,11 +3,11 @@ using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using System.Windows.Controls;
 using Registry;
-using System.Runtime.InteropServices;
 using System;
 using System.Windows.Media.Imaging;
 using System.Linq;
 using System.Text;
+using static UWPSettingsEditor.NativeMethods;
 using static UWPSettingsEditor.UWPDeserializer;
 using System.IO;
 
@@ -18,32 +18,9 @@ namespace UWPSettingsEditor
     /// </summary>
     public partial class MainWindow : Window
     {
-        List<RegistryKey> t_root = new List<RegistryKey>();
+        List<RootTreeView> t_root = new List<RootTreeView>();
         BitmapSource ComputerBitmap;
         BitmapSource FolderBitmap;
-
-        [DllImport("Shell32.dll", EntryPoint = "ExtractIconExW", CharSet = CharSet.Unicode, ExactSpelling = true, CallingConvention = CallingConvention.StdCall)]
-        private static extern int ExtractIconEx(string sFile, int iIndex, out IntPtr piLargeVersion, out IntPtr piSmallVersion, int amountIcons);
-
-        public static BitmapSource ExtractIcon(string file, int number, bool largeIcon)
-        {
-            IntPtr large;
-            IntPtr small;
-            ExtractIconEx(file, number, out large, out small, 1);
-            try
-            {
-                return System.Windows.Interop.Imaging.CreateBitmapSourceFromHIcon(
-                    largeIcon ? large : small,
-                    Int32Rect.Empty,
-                    BitmapSizeOptions.FromEmptyOptions());
-            }
-            catch
-            {
-                return null;
-            }
-
-        }
-
 
         public MainWindow()
         {
@@ -52,7 +29,7 @@ namespace UWPSettingsEditor
             ComputerBitmap = ExtractIcon("Shell32.dll", 15, false);
             FolderBitmap = ExtractIcon("Shell32.dll", 3, false);
 
-            t_root.Add(new RegistryKey() { Name = "Computer", FullPath = ":COMPUTER:", ImageSource = ComputerBitmap });
+            t_root.Add(new RootTreeView() { Name = "Computer", ImageSource = ComputerBitmap });
 
             //var path = @"C:\Users\ADelt\Documents\DRIVERS";
             //var path = @"C:\Users\ADelt\AppData\Local\Packages\ab6f14c6-abb5-4c2d-adb6-acbf601f6c7a_stwyy6x120xkg\Settings\settings - Copy.dat"; //@"C:\Users\ADelt\AppData\Local\Packages\Microsoft.WindowsStore_8wekyb3d8bbwe\Settings\settings.dat"
@@ -68,17 +45,16 @@ namespace UWPSettingsEditor
             var hive = new RegistryHive(filename);
             if (hive.ParseHive())
             {
-                var t_hive = new RegistryKey 
+                var t_hive = new RegistryHiveTreeView(hive)
                 { 
-                    Name = Path.GetFileName(filename), 
-                    AttachedHive = hive, 
-                    FullPath = hive.HivePath,
+                    Name = Path.GetFileName(filename),
                     ImageSource = FolderBitmap
                 };
 
-                root.Children.Add(t_hive);
+                root.RegistryHiveTreeViews.Add(t_hive);
 
-                t_hive.LoadDummyChild();
+                if (hive.Root.SubKeys != null && hive.Root.SubKeys.Count > 0)
+                    t_hive.LoadDummyChild();
 
                 return true;
             }
@@ -88,113 +64,100 @@ namespace UWPSettingsEditor
             }
         }
 
-        private void LoadSubkey(RegistryKey regKey)
+        private void LoadSubkeyRoot(RegistryHiveTreeView registryHiveTreeView)
         {
-            //if dummy remove children
-            //regKey.AttachedHive.
+            if (registryHiveTreeView.IsDummy)
+                registryHiveTreeView.RemoveDummyChild();
 
+            var regKeyTreeViews = GetRegistryKeyTreeViews(registryHiveTreeView.AttachedHive, registryHiveTreeView.AttachedHive.Root);
+
+            for (int i = 0; i < regKeyTreeViews.Length; i++)
+                registryHiveTreeView.Children.Add(regKeyTreeViews[i]);
+        }
+
+        private void LoadSubkey(RegistryKeyTreeView regKey)
+        {
             if (regKey.IsDummy)
+                regKey.RemoveDummyChild();
+
+            var regKeyTreeViews = GetRegistryKeyTreeViews(regKey.AttachedHive, regKey.AttachedHive.GetKey(regKey.Path));
+
+            for (int i = 0; i < regKeyTreeViews.Length; i++)
+                regKey.Children.Add(regKeyTreeViews[i]);
+        }
+
+        private RegistryKeyTreeView[] GetRegistryKeyTreeViews(RegistryHive registryHive, Registry.Abstractions.RegistryKey registryKey)
+        {
+            RegistryKeyTreeView[] registryKeyTreeViews = new RegistryKeyTreeView[registryKey.SubKeys.Count];
+
+            for (int i = 0; i < registryKey.SubKeys.Count; i++)
             {
-                regKey.Children.Clear();
-                regKey.IsDummy = false;
-            }
-
-            RegistryHive hive;
-
-            if (regKey.AttachedHive != null)
-                hive = regKey.AttachedHive;
-            else
-            {
-                return;
-            }
-
-            Registry.Abstractions.RegistryKey keyBase;
-
-            if (regKey.FullPath == regKey.AttachedHive.HivePath)
-            {
-                //Root!
-                keyBase = hive.Root;
-            }
-            else
-            {
-                keyBase = hive.GetKey(regKey.FullPath);
-            }
-
-
-            if (keyBase != null && keyBase.SubKeys.Count > 0)
-            {
-                foreach (var key in keyBase.SubKeys)
+                var regChild = new RegistryKeyTreeView
                 {
-                    var regChild = new RegistryKey
-                    {
-                        AttachedHive = hive,
-                        FullPath = key.KeyPath,
-                        Name = key.KeyName,
-                        ImageSource = FolderBitmap
-                    };
+                    AttachedHive = registryHive,
+                    ImageSource = FolderBitmap,
+                    Name = registryKey.SubKeys[i].KeyName,
+                    Path = registryKey.SubKeys[i].KeyPath
+                };
 
-                    if (key.SubKeys != null && key.SubKeys.Count > 0)
-                        regChild.LoadDummyChild();
+                if (registryKey.SubKeys[i].SubKeys != null && registryKey.SubKeys[i].SubKeys.Count > 0)
+                    regChild.LoadDummyChild();
 
-                    regKey.Children.Add(regChild);
-                }
+                registryKeyTreeViews[i] = regChild;
             }
 
+            return registryKeyTreeViews;
         }
 
         private void treeView_Expanded(object sender, RoutedEventArgs e)
         {
-            TreeViewItem tvi = e.OriginalSource as TreeViewItem;
-            if (tvi != null)
+            if (e.OriginalSource is TreeViewItem tvi)
             {
-                var regKey = tvi.DataContext as RegistryKey;
-
-                if (regKey.IsDummy)
+                if (tvi.DataContext is RegistryHiveTreeView registryHiveTreeView)
                 {
-                    LoadSubkey(regKey);
-                    //Populate
+                    if (registryHiveTreeView.IsDummy)
+                    {
+                        LoadSubkeyRoot(registryHiveTreeView);
+                    }
+                }
+                else if (tvi.DataContext is RegistryKeyTreeView registryKeyTreeView)
+                {
+                    if (registryKeyTreeView.IsDummy)
+                    {
+                        LoadSubkey(registryKeyTreeView);
+                    }
                 }
             }
         }
 
         private void treeView_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
-            RegistryKey regKey = e.NewValue as RegistryKey;
-
             if (e.NewValue == e.OldValue)
                 return;
 
-            if (regKey != null)
+            listView.Items.Clear();
+
+            void PopulateListView(Registry.Abstractions.RegistryKey registryKey)
             {
-                if (regKey.FullPath != ":COMPUTER:")
+                if (registryKey.Values != null && registryKey.Values.Count > 0)
                 {
-                    RegistryHive hive;
-
-                    if (regKey.AttachedHive != null)
-                        hive = regKey.AttachedHive;
-                    else
-                        return;
-
-                    Registry.Abstractions.RegistryKey keyBase;
-
-                    if (regKey.FullPath == regKey.AttachedHive.HivePath)
-                        keyBase = hive.Root;
-                    else
-                        keyBase = hive.GetKey(regKey.FullPath);
-
-                    if (keyBase != null)
+                    foreach (var keyval in registryKey.Values)
                     {
-                        listView.Items.Clear();
-                        foreach (var keyval in keyBase.Values)
-                        {
-                            listView.Items.Add(new KeyVal { Name = keyval.ValueName, Type = GetStringNameFromDataType(keyval.VkRecord.DataTypeRaw), Data = HandleData(keyval.ValueDataRaw, keyval.VkRecord.DataTypeRaw) });
-                        }
+                        listView.Items.Add(new KeyVal { Name = keyval.ValueName, Type = GetStringNameFromDataType(keyval.VkRecord.DataTypeRaw), Data = HandleData(keyval.ValueDataRaw, keyval.VkRecord.DataTypeRaw) });
                     }
                 }
-                else
-                {
-                    listView.Items.Clear();
-                }
+            }
+
+            if (e.NewValue is RegistryKeyTreeView registryKeyTreeView)
+            {
+                var currKey = registryKeyTreeView.AttachedHive.GetKey(registryKeyTreeView.Path);
+                PopulateListView(currKey);
+
+            }
+            else if (e.NewValue is RegistryHiveTreeView registryHiveTreeView)
+            {
+                var currKey = registryHiveTreeView.AttachedHive.Root;
+                PopulateListView(currKey);
             }
         }
 
@@ -436,10 +399,11 @@ namespace UWPSettingsEditor
             {
                 foreach (var file in openFileDialog.FileNames)
                 {
-                    var isloaded = CheckIfAlreadyLoaded(file);
+                    var isloaded = IsHiveAlreadyLoaded(file);
 
                     if (isloaded)
                     {
+                        //ToDo: more meaningful warning message
                         MessageBox.Show("A hive is already loaded, skipping", "Hive already loaded", MessageBoxButton.OK, MessageBoxImage.Exclamation);
                     }
                     else
@@ -450,20 +414,17 @@ namespace UWPSettingsEditor
             }
         }
 
-        private bool CheckIfAlreadyLoaded(string filename)
+        private bool IsHiveAlreadyLoaded(string filename)
         {
-            foreach (var regHive in t_root[0].Children)
+            foreach (var regHive in t_root[0].RegistryHiveTreeViews)
             {
-                if (regHive.AttachedHive != null)
-                {
-                    var p1 = Path.GetFullPath(filename);
-                    var p2 = Path.GetFullPath(regHive.FullPath);
 
-                    if (string.Equals(p1, p2, StringComparison.OrdinalIgnoreCase))
-                        return true;
-                }
+                var p1 = Path.GetFullPath(filename);
+                var p2 = Path.GetFullPath(regHive.AttachedHive.HivePath);
+
+                if (string.Equals(p1, p2, StringComparison.OrdinalIgnoreCase))
+                    return true;
             }
-
             return false;
         }
     }
@@ -525,27 +486,68 @@ namespace UWPSettingsEditor
         RegUnknown = 999
     }
 
-    public class RegistryKey
+    public class RootTreeView
     {
-        public RegistryKey()
+        public RootTreeView()
         {
-            Children = new ObservableCollection<RegistryKey>();
-        }
-
-        public void LoadDummyChild()
-        {
-            if (Children.Count == 0)
-                Children.Add(new RegistryKey {});
-
-            IsDummy = true;
+            RegistryHiveTreeViews = new ObservableCollection<RegistryHiveTreeView>();
         }
 
         public BitmapSource ImageSource { get; set; }
         public string Name { get; set; }
-        public string FullPath { get; set; }
+        public ObservableCollection<RegistryHiveTreeView> RegistryHiveTreeViews { get; set; }
+    }
+
+    public class RegistryHiveTreeView
+    {
+        public RegistryHiveTreeView(RegistryHive registryHive)
+        {
+            AttachedHive = registryHive;
+            Children = new ObservableCollection<RegistryKeyTreeView>();
+        }
+
+        public void LoadDummyChild()
+        {
+            Children.Add(new RegistryKeyTreeView());
+            IsDummy = true;
+        }
+        public void RemoveDummyChild()
+        {
+            Children.Clear();
+            IsDummy = false;
+        }
+
+        public BitmapSource ImageSource { get; set; }
+        public bool IsDummy { get; set; }
+        public string Name { get; set; }
+        public RegistryHive AttachedHive { get; set; }
+        public ObservableCollection<RegistryKeyTreeView> Children { get; set; }
+    }
+
+    public class RegistryKeyTreeView
+    {
+        public RegistryKeyTreeView()
+        {
+            Children = new ObservableCollection<RegistryKeyTreeView>();
+        }
+
+        public void LoadDummyChild()
+        {
+            Children.Add(new RegistryKeyTreeView());
+            IsDummy = true;
+        }
+        public void RemoveDummyChild()
+        {
+            Children.Clear();
+            IsDummy = false;
+        }
+
+        public BitmapSource ImageSource { get; set; }
+        public string Path { get; set; }
+        public string Name { get; set; }
         public bool IsDummy { get; set; }
         public RegistryHive AttachedHive { get; set; }
-        public ObservableCollection<RegistryKey> Children { get; set; }
+        public ObservableCollection<RegistryKeyTreeView> Children { get; set; }
     }
 
     public class KeyVal

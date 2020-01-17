@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29709.97
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UWPSettingsEditor", "UWPSettingsEditor\UWPSettingsEditor.csproj", "{F51328FF-ECD3-46A5-B77E-4834ABD878E9}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F51328FF-ECD3-46A5-B77E-4834ABD878E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F51328FF-ECD3-46A5-B77E-4834ABD878E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F51328FF-ECD3-46A5-B77E-4834ABD878E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F51328FF-ECD3-46A5-B77E-4834ABD878E9}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {95EBCB63-471C-4F6D-A0DD-0DA9677CC9CF}
+	EndGlobalSection
+EndGlobal

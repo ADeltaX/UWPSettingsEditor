@@ -76,7 +76,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="About.xaml">
+    <Page Include="Controls\StringComponent.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\EditValueWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\About.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -84,22 +92,34 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Compile Include="About.xaml.cs">
+    <Compile Include="Classes\MethodHelpers.cs" />
+    <Compile Include="Classes\Models.cs" />
+    <Compile Include="Controls\StringComponent.xaml.cs">
+      <DependentUpon>StringComponent.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Converters\ByteArrayToStringConverter.cs" />
+    <Compile Include="Converters\DataTypeEnumToStringConverter.cs" />
+    <Compile Include="Enums\DataTypeEnum.cs" />
+    <Compile Include="Interfaces\IValueDataSet.cs" />
+    <Compile Include="Windows\EditValueWindow.xaml.cs">
+      <DependentUpon>EditValueWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\About.xaml.cs">
       <DependentUpon>About.xaml</DependentUpon>
     </Compile>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Deserializer.cs" />
+    <Compile Include="Classes\Deserializer.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="NativeMethods.cs" />
-    <Compile Include="PrimitiveStructs.cs" />
+    <Compile Include="Classes\NativeMethods.cs" />
+    <Compile Include="Classes\PrimitiveStructs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

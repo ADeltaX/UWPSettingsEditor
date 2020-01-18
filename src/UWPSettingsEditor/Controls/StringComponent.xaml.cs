@@ -1,5 +1,6 @@
 ﻿using System.Windows.Controls;
 using UWPSettingsEditor.Interfaces;
+using static UWPSettingsEditor.UWPDeserializer;
 
 namespace UWPSettingsEditor.Controls
 {
@@ -20,7 +21,7 @@ namespace UWPSettingsEditor.Controls
 
         public void SetValueData(byte[] data)
         {
-            throw new System.NotImplementedException();
+            TextBox.Text = GetString(data);
         }
     }
 }

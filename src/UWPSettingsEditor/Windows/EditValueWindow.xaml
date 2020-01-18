@@ -8,6 +8,7 @@
         ResizeMode="CanResizeWithGrip"
         Title="Edit Value" 
         Height="300" Width="400" 
+        WindowStartupLocation="CenterOwner"
         MinHeight="250" MinWidth="400" WindowStyle="ToolWindow">
     <Grid>
         <Grid HorizontalAlignment="Stretch" Margin="12,12,12,48">
@@ -23,7 +24,7 @@
             </Grid.RowDefinitions>
 
             <TextBlock Grid.Column="0" Height="20" HorizontalAlignment="Center" Text="Value name:" />
-            <TextBox Grid.Column="2" Height="20" />
+            <TextBox x:Name="ValueNameTextBox" Grid.Column="2" Height="20" />
 
             <Grid x:Name="ContainerGrid" Grid.Row="2" Grid.ColumnSpan="3" Background="AliceBlue" />
         </Grid>

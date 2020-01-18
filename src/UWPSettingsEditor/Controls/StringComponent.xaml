@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:UWPSettingsEditor.Controls"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <TextBox AcceptsReturn="True">
+    <TextBox x:Name="TextBox" AcceptsReturn="True">
             
     </TextBox>
 </UserControl>

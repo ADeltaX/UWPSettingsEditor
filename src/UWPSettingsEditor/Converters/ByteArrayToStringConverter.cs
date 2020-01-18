@@ -25,14 +25,15 @@ namespace UWPSettingsEditor.Converters
         {
             if ((int)dataType > 256 && (int)dataType < 294)
             {
-                byte[] data = dataRaw.SkipLast(8).ToArray();
-                byte[] timestamp = dataRaw.Skip(data.Length).ToArray();
-                var timeStampOffsetless = DateTimeOffset.FromFileTime(BitConverter.ToInt64(timestamp, 0));
+                var splittedDataRaw = MethodHelpers.SplitDataRaw(dataRaw);
+                var data = splittedDataRaw.Key;
+                //var timestamp = DateTimeOffset.FromFileTime(BitConverter.ToInt64(timestamp, 0));
+                //var timeStamp = ;
 
                 switch (dataType)
                 {
                     case DataTypeEnum.RegUwpByte:
-                        return GetByte(data).ToString("X2");
+                        return GetByte(data).ToString();
                     case DataTypeEnum.RegUwpInt16:
                         return GetInt16(data).ToString();
                     case DataTypeEnum.RegUwpUint16:
@@ -54,7 +55,7 @@ namespace UWPSettingsEditor.Converters
                     case DataTypeEnum.RegUwpBoolean:
                         return GetBoolean(data).ToString();
                     case DataTypeEnum.RegUwpString:
-                        return "\"" + GetString(data) + "\"";
+                        return "\"" + MethodHelpers.ReplaceMultilineWithSymbols(GetString(data)) + "\"";
                     case DataTypeEnum.RegUwpCompositeValue:
                         return PrettyPrintDictionary(GetCompositeValue(data));
                     case DataTypeEnum.RegUwpDateTimeOffset:
@@ -89,11 +90,11 @@ namespace UWPSettingsEditor.Converters
                     case DataTypeEnum.RegUwpArrayDouble:
                         return PrettyPrintArray(GetArray(data.Length, 8, i => GetDouble(data, i)));
                     case DataTypeEnum.RegUwpArrayChar16:
-                        return PrettyPrintArray(GetArray(data.Length, 2, i => GetChar(data, i)));
+                        return PrettyPrintArray(GetArray(data.Length, 2, i => GetChar(data, i)), "'");
                     case DataTypeEnum.RegUwpArrayBoolean:
                         return PrettyPrintArray(GetArray(data.Length, 1, i => GetBoolean(data, i)));
                     case DataTypeEnum.RegUwpArrayString:
-                        return PrettyPrintStringArray(data);
+                        return PrettyPrintStringArrayFromRaw(data);
                     case DataTypeEnum.RegUwpArrayDateTimeOffset:
                         return PrettyPrintArray(GetArray(data.Length, 8, i => GetDateTimeOffset(data, i)));
                     case DataTypeEnum.RegUwpArrayTimeSpan:

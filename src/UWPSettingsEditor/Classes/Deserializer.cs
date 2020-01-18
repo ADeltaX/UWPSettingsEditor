@@ -261,20 +261,6 @@ namespace UWPSettingsEditor
             return dict;
         }
 
-        public static string PrettyPrintArray(Array array)
-        {
-            StringBuilder stringBuilder = new StringBuilder();
-
-            for (int i = 0; i < array.Length; i++)
-            {
-                stringBuilder.Append("[" + array.GetValue(i).ToString() + "]");
-                if (i < array.Length - 1)
-                    stringBuilder.Append(", ");
-            }
-
-            return stringBuilder.ToString();
-        }
-
         public static string PrettyPrintDictionary(Dictionary<string, object> dict)
         {
             StringBuilder stringBuilder = new StringBuilder();
@@ -288,10 +274,14 @@ namespace UWPSettingsEditor
                     formatted = "\"" + item.Value + "\"";
                 else if (item.Value is char)
                     formatted = "'" + item.Value + "'";
+                else if (item.Value is char[])
+                    formatted = "[ " + PrettyPrintArray(item.Value as Array, "'") + " ]";
+                else if (item.Value is string[])
+                    formatted = "[ " + PrettyPrintArray(item.Value as Array, "\"") + " ]";
                 else if (item.Value is Array)
-                    formatted = "[" + PrettyPrintArray(item.Value as Array) + "]";
+                    formatted = "[ " + PrettyPrintArray(item.Value as Array) + " ]";
 
-                stringBuilder.Append("{\"" + item.Key + "\":" + formatted + "}");
+                stringBuilder.Append("{ \"" + item.Key + "\" : " + formatted + " }");
 
                 if (++i < dict.Count)
                     stringBuilder.Append(", ");
@@ -300,19 +290,33 @@ namespace UWPSettingsEditor
             return stringBuilder.ToString();
         }
 
-        public static string PrettyPrintStringArray(byte[] data)
+        public static string PrettyPrintArray(Array array, string quotes = "")
         {
             StringBuilder stringBuilder = new StringBuilder();
 
-            for (int position = 0; position < data.Length;)
+            for (int i = 0; i < array.Length; i++)
             {
-                var stringLength = BitConverter.ToInt32(data, position);
+                stringBuilder.Append("[ " + quotes + array.GetValue(i).ToString() + quotes + " ]");
+                if (i < array.Length - 1)
+                    stringBuilder.Append(", ");
+            }
+
+            return stringBuilder.ToString();
+        }
+
+        public static string PrettyPrintStringArrayFromRaw(byte[] dataRaw)
+        {
+            StringBuilder stringBuilder = new StringBuilder();
+
+            for (int position = 0; position < dataRaw.Length;)
+            {
+                var stringLength = BitConverter.ToInt32(dataRaw, position);
                 var index = position + 4;
                 position = position + 4 + stringLength;
 
 
-                stringBuilder.Append("[\"" + GetString(data, index, stringLength) + "\"]");
-                if (position != data.Length)
+                stringBuilder.Append("[ \"" + MethodHelpers.ReplaceMultilineWithSymbols(GetString(dataRaw, index, stringLength)) + "\" ]");
+                if (position != dataRaw.Length)
                     stringBuilder.Append(", ");
             }
 

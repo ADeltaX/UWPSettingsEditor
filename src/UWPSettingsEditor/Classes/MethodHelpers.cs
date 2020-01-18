@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 
@@ -32,6 +33,30 @@ namespace UWPSettingsEditor
                 source = VisualTreeHelper.GetParent(source);
 
             return source as T;
+        }
+
+        //ToDo: find a better name for this pls
+        /// <summary>
+        /// Method for splitting the data into the actual data + timestamp 
+        /// </summary>
+        /// <param name="data">Complete data raw</param>
+        /// <returns>KeyValuePair of data and timestamp</returns>
+        public static KeyValuePair<byte[], byte[]> SplitDataRaw(byte[] dataRaw)
+        {
+            byte[] data = dataRaw.SkipLast(8).ToArray();
+            byte[] timestamp = dataRaw.Skip(data.Length).ToArray();
+
+            return new KeyValuePair<byte[], byte[]>(data, timestamp);
+        }
+
+        public static string ReplaceMultilineWithSymbols(string str)
+        {
+            var repStr = str.Replace("\r\n", "\\r\\n").Replace("\r", "\\r").Replace("\n", "\\n");
+
+            if (repStr.Length > 256)
+                repStr = repStr.Substring(0, 256) + "...";
+
+            return repStr;
         }
     }
 }

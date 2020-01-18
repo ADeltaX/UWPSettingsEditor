@@ -182,7 +182,7 @@ namespace UWPSettingsEditor
 
         private void MenuItem_Click(object sender, RoutedEventArgs e)
         {
-            About about = new About();
+            AboutWindow about = new AboutWindow();
             about.ShowDialog();
         }
 
@@ -247,6 +247,7 @@ namespace UWPSettingsEditor
                 if (listViewItem != null)
                 {
                     EditValueWindow window = new EditValueWindow((KeyVal)listViewItem.DataContext);
+                    window.Owner = this;
                     window.ShowDialog();
                 }
             }

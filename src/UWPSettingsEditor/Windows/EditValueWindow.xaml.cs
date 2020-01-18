@@ -1,5 +1,6 @@
 ﻿using UWPSettingsEditor.Interfaces;
 using UWPSettingsEditor.Controls;
+using static UWPSettingsEditor.UWPDeserializer;
 
 namespace UWPSettingsEditor
 {
@@ -9,17 +10,23 @@ namespace UWPSettingsEditor
     public partial class EditValueWindow
     {
         readonly IValueDataSet valueDataSet;
+        KeyVal currentKeyVal;
 
         public EditValueWindow(KeyVal val)
         {
+            currentKeyVal = val;
+            var splitted = MethodHelpers.SplitDataRaw(val.Data);
+
             InitializeComponent();
+            ValueNameTextBox.Text = val.Name;
+
             if (val.DataTypeEnum == DataTypeEnum.RegUwpString)
             {
                 var componentControl = new StringComponent();
                 ContainerGrid.Children.Add(componentControl);
                 valueDataSet = componentControl as IValueDataSet;
 
-                valueDataSet.SetValueData(val.Data);
+                valueDataSet.SetValueData(splitted.Key);
             }
         }
 

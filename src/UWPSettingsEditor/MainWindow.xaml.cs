@@ -1,15 +1,11 @@
 ﻿using System.Windows;
-using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using System.Windows.Controls;
 using Registry;
 using System;
 using System.Windows.Media.Imaging;
-using System.Linq;
-using System.Text;
 using static UWPSettingsEditor.NativeMethods;
 using System.IO;
-using System.Windows.Media;
 using System.Windows.Input;
 
 namespace UWPSettingsEditor
@@ -105,8 +101,6 @@ namespace UWPSettingsEditor
             return registryKeyTreeViews;
         }
 
-        
-
         private bool IsHiveAlreadyLoaded(string filename)
         {
             foreach (var regHive in t_root[0].RegistryHiveTreeViews)
@@ -120,7 +114,6 @@ namespace UWPSettingsEditor
             }
             return false;
         }
-
 
         private void treeView_Expanded(object sender, RoutedEventArgs e)
         {
@@ -248,7 +241,13 @@ namespace UWPSettingsEditor
                 {
                     EditValueWindow window = new EditValueWindow((KeyVal)listViewItem.DataContext);
                     window.Owner = this;
-                    window.ShowDialog();
+                    var isEdited = window.ShowDialog();
+
+                    if (isEdited.HasValue && isEdited.Value)
+                    {
+                        //TODO: Is edited!!!!!
+                        //TODO: check if key name or key value or both
+                    }
                 }
             }
         }

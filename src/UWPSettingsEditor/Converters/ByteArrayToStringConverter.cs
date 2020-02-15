@@ -26,7 +26,7 @@ namespace UWPSettingsEditor.Converters
             if ((int)dataType > 256 && (int)dataType < 294)
             {
                 var splittedDataRaw = MethodHelpers.SplitDataRaw(dataRaw);
-                var data = splittedDataRaw.Key;
+                var data = splittedDataRaw.Value;
                 //var timestamp = DateTimeOffset.FromFileTime(BitConverter.ToInt64(timestamp, 0));
                 //var timeStamp = ;
 
@@ -55,9 +55,9 @@ namespace UWPSettingsEditor.Converters
                     case DataTypeEnum.RegUwpBoolean:
                         return GetBoolean(data).ToString();
                     case DataTypeEnum.RegUwpString:
-                        return "\"" + MethodHelpers.ReplaceMultilineWithSymbols(GetString(data)) + "\"";
+                        return "\"" + GetString(data).ReplaceMultilineWithSymbols() + "\"";
                     case DataTypeEnum.RegUwpCompositeValue:
-                        return PrettyPrintDictionary(GetCompositeValue(data));
+                        return PrettyPrintDictionary(GetCompositeValue(data)).ReplaceMultilineWithSymbols();
                     case DataTypeEnum.RegUwpDateTimeOffset:
                         return GetDateTimeOffset(data).ToString();
                     case DataTypeEnum.RegUwpTimeSpan:
@@ -71,42 +71,42 @@ namespace UWPSettingsEditor.Converters
                     case DataTypeEnum.RegUwpRect:
                         return GetRect(data).ToString();
                     case DataTypeEnum.RegUwpArrayByte:
-                        return PrettyPrintArray(GetArray(data.Length, 1, i => GetByte(data, i)));
+                        return PrettyPrintArray(GetArray(data.Length, 1, i => GetByte(data, i))).ReplaceMultilineWithSymbols();
                     // PrettyPrintArray(data, 1, i => GetByte(data, i).ToString("X2"));
                     case DataTypeEnum.RegUwpArrayInt16:
-                        return PrettyPrintArray(GetArray(data.Length, 2, i => GetInt16(data, i)));
+                        return PrettyPrintArray(GetArray(data.Length, 2, i => GetInt16(data, i))).ReplaceMultilineWithSymbols();
                     case DataTypeEnum.RegUwpArrayUint16:
-                        return PrettyPrintArray(GetArray(data.Length, 2, i => GetUInt16(data, i)));
+                        return PrettyPrintArray(GetArray(data.Length, 2, i => GetUInt16(data, i))).ReplaceMultilineWithSymbols();
                     case DataTypeEnum.RegUwpArrayInt32:
-                        return PrettyPrintArray(GetArray(data.Length, 4, i => GetInt32(data, i)));
+                        return PrettyPrintArray(GetArray(data.Length, 4, i => GetInt32(data, i))).ReplaceMultilineWithSymbols();
                     case DataTypeEnum.RegUwpArrayUint32:
-                        return PrettyPrintArray(GetArray(data.Length, 4, i => GetUInt32(data, i)));
+                        return PrettyPrintArray(GetArray(data.Length, 4, i => GetUInt32(data, i))).ReplaceMultilineWithSymbols();
                     case DataTypeEnum.RegUwpArrayInt64:
-                        return PrettyPrintArray(GetArray(data.Length, 8, i => GetInt64(data, i)));
+                        return PrettyPrintArray(GetArray(data.Length, 8, i => GetInt64(data, i))).ReplaceMultilineWithSymbols();
                     case DataTypeEnum.RegUwpArrayUint64:
-                        return PrettyPrintArray(GetArray(data.Length, 8, i => GetUInt64(data, i)));
+                        return PrettyPrintArray(GetArray(data.Length, 8, i => GetUInt64(data, i))).ReplaceMultilineWithSymbols();
                     case DataTypeEnum.RegUwpArraySingle:
-                        return PrettyPrintArray(GetArray(data.Length, 4, i => GetSingle(data, i)));
+                        return PrettyPrintArray(GetArray(data.Length, 4, i => GetSingle(data, i))).ReplaceMultilineWithSymbols();
                     case DataTypeEnum.RegUwpArrayDouble:
-                        return PrettyPrintArray(GetArray(data.Length, 8, i => GetDouble(data, i)));
+                        return PrettyPrintArray(GetArray(data.Length, 8, i => GetDouble(data, i))).ReplaceMultilineWithSymbols();
                     case DataTypeEnum.RegUwpArrayChar16:
-                        return PrettyPrintArray(GetArray(data.Length, 2, i => GetChar(data, i)), "'");
+                        return PrettyPrintArray(GetArray(data.Length, 2, i => GetChar(data, i)), "'").ReplaceMultilineWithSymbols();
                     case DataTypeEnum.RegUwpArrayBoolean:
-                        return PrettyPrintArray(GetArray(data.Length, 1, i => GetBoolean(data, i)));
+                        return PrettyPrintArray(GetArray(data.Length, 1, i => GetBoolean(data, i))).ReplaceMultilineWithSymbols();
                     case DataTypeEnum.RegUwpArrayString:
-                        return PrettyPrintStringArrayFromRaw(data);
+                        return PrettyPrintStringArrayFromRaw(data).ReplaceMultilineWithSymbols();
                     case DataTypeEnum.RegUwpArrayDateTimeOffset:
-                        return PrettyPrintArray(GetArray(data.Length, 8, i => GetDateTimeOffset(data, i)));
+                        return PrettyPrintArray(GetArray(data.Length, 8, i => GetDateTimeOffset(data, i))).ReplaceMultilineWithSymbols();
                     case DataTypeEnum.RegUwpArrayTimeSpan:
-                        return PrettyPrintArray(GetArray(data.Length, 8, i => GetTimeSpan(data, i)));
+                        return PrettyPrintArray(GetArray(data.Length, 8, i => GetTimeSpan(data, i))).ReplaceMultilineWithSymbols();
                     case DataTypeEnum.RegUwpArrayGuid:
-                        return PrettyPrintArray(GetArray(data.Length, 16, i => GetGuid(data, i)));
+                        return PrettyPrintArray(GetArray(data.Length, 16, i => GetGuid(data, i))).ReplaceMultilineWithSymbols();
                     case DataTypeEnum.RegUwpArrayPoint:
-                        return PrettyPrintArray(GetArray(data.Length, 4 * 2, i => GetPoint(data, i)));
+                        return PrettyPrintArray(GetArray(data.Length, 4 * 2, i => GetPoint(data, i))).ReplaceMultilineWithSymbols();
                     case DataTypeEnum.RegUwpArraySize:
-                        return PrettyPrintArray(GetArray(data.Length, 4 * 2, i => GetSize(data, i)));
+                        return PrettyPrintArray(GetArray(data.Length, 4 * 2, i => GetSize(data, i))).ReplaceMultilineWithSymbols();
                     case DataTypeEnum.RegUwpArrayRect:
-                        return PrettyPrintArray(GetArray(data.Length, 4 * 4, i => GetRect(data, i)));
+                        return PrettyPrintArray(GetArray(data.Length, 4 * 4, i => GetRect(data, i))).ReplaceMultilineWithSymbols();
                     default:
                         return "***-UNPARSED-***";
                 }

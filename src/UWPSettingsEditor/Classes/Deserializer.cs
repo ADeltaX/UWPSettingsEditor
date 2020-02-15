@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace UWPSettingsEditor
 {
-    public class UWPDeserializer
+    public static class UWPDeserializer
     {
         public static byte GetByte(byte[] data, int index = 0) 
             => data[index];
@@ -315,7 +315,7 @@ namespace UWPSettingsEditor
                 position = position + 4 + stringLength;
 
 
-                stringBuilder.Append("[ \"" + MethodHelpers.ReplaceMultilineWithSymbols(GetString(dataRaw, index, stringLength)) + "\" ]");
+                stringBuilder.Append("[ \"" + GetString(dataRaw, index, stringLength).ReplaceMultilineWithSymbols() + "\" ]");
                 if (position != dataRaw.Length)
                     stringBuilder.Append(", ");
             }

@@ -2,7 +2,7 @@
 {
     public interface IValueDataSet
     {
-        void SetValueData(byte[] data);
-        byte GetValueData();
+        void SetValueData(byte[] dataRaw);
+        byte[] GetValueData();
     }
 }

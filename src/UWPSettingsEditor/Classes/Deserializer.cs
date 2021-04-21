@@ -122,7 +122,7 @@ namespace UWPSettingsEditor
             do
             {
                 var compositeLength = GetInt32(data, currentPos);
-                var compositeTypeData = (DataTypeEnum)(256 + GetUInt32(data, currentPos + 4));
+                var compositeTypeData = (DataTypeEnum)((int)(DataTypeEnum.RegUwpByte) + GetUInt32(data, currentPos + 4) - 1);
                 var compositeKeyLength = GetInt32(data, currentPos + 8) * 2 + 2; //* sizeof wchar + null-termination
 
                 var padding = 8 - (compositeLength % 8);
@@ -166,7 +166,7 @@ namespace UWPSettingsEditor
                     case DataTypeEnum.RegUwpDouble:
                         value = GetDouble(data, currentPos);
                         break;
-                    case DataTypeEnum.RegUwpChar16:
+                    case DataTypeEnum.RegUwpChar:
                         value = GetChar(data, currentPos);
                         break;
                     case DataTypeEnum.RegUwpBoolean:
@@ -304,6 +304,20 @@ namespace UWPSettingsEditor
             return stringBuilder.ToString();
         }
 
+        public static string PrettyPrintArray(byte[] array, string quotes = "")
+        {
+            StringBuilder stringBuilder = new StringBuilder();
+
+            for (int i = 0; i < array.Length; i++)
+            {
+                stringBuilder.Append(array[i].ToString("X2"));
+                if (i < array.Length - 1)
+                    stringBuilder.Append(" ");
+            }
+
+            return stringBuilder.ToString();
+        }
+
         public static string PrettyPrintStringArrayFromRaw(byte[] dataRaw)
         {
             StringBuilder stringBuilder = new StringBuilder();
@@ -322,5 +336,17 @@ namespace UWPSettingsEditor
 
             return stringBuilder.ToString();
         }
+    }
+
+    public static class Deserializer
+    {
+        public static uint GetUInt32(byte[] data, int index = 0)
+            => BitConverter.ToUInt32(data, index);
+
+        public static uint GetUInt32BigEndian(byte[] data, int index = 0)
+            => (uint)((data[index] << 24) | (data[index + 1] << 16) | (data[index + 2] << 8) | data[index + 3]);
+
+            public static ulong GetUInt64(byte[] data, int index = 0)
+            => BitConverter.ToUInt64(data, index);
     }
 }

@@ -1,7 +1,8 @@
-﻿using Registry;
+﻿using DiscUtils.Registry;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -44,6 +45,7 @@ namespace UWPSettingsEditor
         public BitmapSource ImageSource { get; set; }
         public bool IsDummy { get; set; }
         public string Name { get; set; }
+        public string FilePath { get; set; }
         public RegistryHive AttachedHive { get; set; }
         public ObservableCollection<RegistryKeyTreeView> Children { get; set; }
     }
@@ -70,15 +72,21 @@ namespace UWPSettingsEditor
         public string Path { get; set; }
         public string Name { get; set; }
         public bool IsDummy { get; set; }
+        public RegistryHiveTreeView Root { get; set; }
         public RegistryHive AttachedHive { get; set; }
         public ObservableCollection<RegistryKeyTreeView> Children { get; set; }
     }
 
-    public class KeyVal
+    public class KeyVal : INotifyPropertyChanged
     {
+        private byte[] data;
+
         public string Path { get; set; }
         public string Name { get; set; }
         public DataTypeEnum DataTypeEnum { get; set; }
-        public byte[] Data { get; set; }
+        public RegistryHive Hive { get; set; }
+        public byte[] Data { get => data; set { data = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Data")); } }
+
+        public event PropertyChangedEventHandler PropertyChanged;
     }
 }

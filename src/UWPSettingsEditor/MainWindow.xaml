@@ -6,98 +6,458 @@
         xmlns:local="clr-namespace:UWPSettingsEditor"
         xmlns:converters="clr-namespace:UWPSettingsEditor.Converters"
         mc:Ignorable="d"
-        Title="ADeltaX's UWP settings editor - v0.57" Height="450" Width="960">
-    <Grid>
+        Title="ADeltaX's offline registry hive editor - v0.71"
+        Background="Transparent" PreviewMouseDown="Window_PreviewMouseDown">
+    <Window.Resources>
+        <DrawingImage x:Key="OpenFileImage">
+            <DrawingImage.Drawing>
+                <DrawingGroup>
+                    <DrawingGroup.Children>
+                        <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16.018L0,16.018 0,0.0180000000000007 16,0.0180000000000007z" />
+                        <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M16,4.3965L16,16.0175 3,16.0175 3,9.9675C1.308,9.7215 0,8.2765 0,6.5175 0,4.7595 1.308,3.3135 3,3.0685L3,0.0175000000000001 5.711,0.0175000000000001 5.729,0.000499999999999723 5.746,0.0175000000000001 11.621,0.0175000000000001z" />
+                        <GeometryDrawing Brush="#FFEFEFF0" Geometry="F1M10,6.0176L10,4.7636 5.729,9.0356 5,8.3066 5,14.0176 14,14.0176 14,6.0176z M10,4.2716L10,2.0176 7.746,2.0176z M13.793,5.0176L11,5.0176 11,2.2246z" />
+                        <GeometryDrawing Brush="#FF424242" Geometry="F1M6.7464,1.0177L7.7464,2.0177 9.9994,2.0177 9.9994,6.0167 14.0004,6.0167 14.0004,14.0177 5.0004,14.0177 5.0004,10.0177 3.9994,10.0177 3.9994,15.0167 15.0004,15.0167 15.0004,4.8107 11.2064,1.0177z M10.9994,2.2247L13.7934,5.0177 10.9994,5.0177z" />
+                        <GeometryDrawing Brush="#FF00529C" Geometry="F1M8.832,4.5176L5.728,7.6216 5.021,6.9136 6.918,5.0176 3.5,5.0176C2.673,5.0176 2,5.6906 2,6.5176 2,7.3446 2.673,8.0176 3.5,8.0176L3.5,9.0176C2.122,9.0176 1,7.8966 1,6.5176 1,5.1396 2.122,4.0176 3.5,4.0176L6.918,4.0176 5.021,2.1216 5.728,1.4136z" />
+                    </DrawingGroup.Children>
+                </DrawingGroup>
+            </DrawingImage.Drawing>
+        </DrawingImage>
+        <DrawingImage x:Key="ExitImage">
+            <DrawingImage.Drawing>
+                <DrawingGroup>
+                    <DrawingGroup.Children>
+                        <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
+                        <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M9.5859,10L8.9999,10.586 8.9999,11.445C8.4099,11.789 7.7319,12 6.9999,12 4.7909,12 2.9999,10.209 2.9999,8 2.9999,5.791 4.7909,4 6.9999,4 7.7319,4 8.4099,4.211 8.9999,4.555L8.9999,5.414 9.5859,6 7.9999,6 7.9999,10z M13.2279,4.813C12.0669,2.551 9.7169,1 6.9999,1 3.1339,1 -9.99999999997669E-05,4.134 -9.99999999997669E-05,8 -9.99999999997669E-05,11.866 3.1339,15 6.9999,15 9.7169,15 12.0669,13.449 13.2279,11.187L15.9999,8.414 15.9999,7.586z" />
+                        <GeometryDrawing Brush="#FF414141" Geometry="F1M7,13C4.238,13 2,10.762 2,8 2,5.238 4.238,3 7,3 8.118,3 9.14,3.38 9.973,4L11.463,4C10.365,2.775 8.775,2 7,2 3.686,2 1,4.687 1,8 1,11.313 3.686,14 7,14 8.775,14 10.365,13.225 11.463,12L9.973,12C9.14,12.62,8.118,13,7,13" />
+                        <GeometryDrawing Brush="#FF414141" Geometry="F1M12,5L10,5 12,7 9,7 9,9 12,9 10,11 12,11 15,8z" />
+                    </DrawingGroup.Children>
+                </DrawingGroup>
+            </DrawingImage.Drawing>
+        </DrawingImage>
+        <DrawingImage x:Key="ComputerImage">
+            <DrawingImage.Drawing>
+                <DrawingGroup>
+                    <DrawingGroup.Children>
+                        <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M7.0002,-0.000199999999999534L7.0002,4.9998 0.000200000000000422,4.9998 0.000200000000000422,13.9998 1.0002,13.9998 1.0002,15.9998 11.0002,15.9998 11.0002,13.9998 11.9992,13.9998 11.9992,13.0008 16.0002,13.0008 16.0002,-0.000199999999999534z" />
+                        <GeometryDrawing Brush="#FF414141" Geometry="F1M14,3L9,3 9,2 14,2z M14,11L13,11 13,10 14,10z M8,1L8,5 9,5 9,4 14,4 14,5 12,5 12,12 15,12 15,1z" />
+                        <GeometryDrawing Brush="#FF414141" Geometry="F1M2,7L10,7 10,12 2,12z M11,13L11,6 1,6 1,13 5,13 5,14 2,14 2,15 10,15 10,14 7,14 7,13z" />
+                        <GeometryDrawing Brush="#FFF0EFF1" Geometry="F1M14,10L13,10 13,11 14,11z M14,4L9,4 9,5 14,5z M14,3L9,3 9,2 14,2z" />
+                        <GeometryDrawing Brush="#FFF0EFF1" Geometry="F1M10,12L2,12 2,7 10,7z" />
+                    </DrawingGroup.Children>
+                </DrawingGroup>
+            </DrawingImage.Drawing>
+        </DrawingImage>
+        <DrawingImage x:Key="CloseImage">
+            <DrawingImage.Drawing>
+                <DrawingGroup>
+                    <DrawingGroup.Children>
+                        <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
+                        <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M8.0001,5.1721L3.4571,0.6291 0.629099999999999,3.4571 5.1721,8.0001 0.629099999999999,12.5431 3.4571,15.3711 8.0001,10.8281 12.5431,15.3711 15.3711,12.5431 10.8281,8.0001 15.3711,3.4571 12.5431,0.6291z" />
+                        <GeometryDrawing Brush="#FF424242" Geometry="F1M9.4141,8L13.9571,12.543 12.5431,13.957 8.0001,9.414 3.4571,13.957 2.0431,12.543 6.5861,8 2.0431,3.457 3.4571,2.043 8.0001,6.586 12.5431,2.043 13.9571,3.457z" />
+                    </DrawingGroup.Children>
+                </DrawingGroup>
+            </DrawingImage.Drawing>
+        </DrawingImage>
+        <DrawingImage x:Key="NewFieldImage">
+            <DrawingImage.Drawing>
+                <DrawingGroup>
+                    <DrawingGroup.Children>
+                        <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
+                        <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M2.9997,-0.000199999999999534L2.9997,0.8778 2.3787,0.2568 0.2577,2.3788 0.8787,3.0008 -0.000300000000000189,3.0008 -0.000300000000000189,5.9998 0.8787,5.9998 0.2567,6.6208 2.3787,8.7428 2.9997,8.1218 2.9997,8.9998 3.9997,8.9998 3.9997,12.6178 8.9997,15.1178 16.0007,11.6178 16.0007,6.3818 10.9997,3.8818 8.9997,4.8818 8.9997,3.0008 8.1207,3.0008 8.7427,2.3788 6.6217,0.2568 6.0007,0.8778 6.0007,-0.000199999999999534z" />
+                        <GeometryDrawing Brush="#FFF0EFF1" Geometry="F1M13,7L9,9 7.242,8.121 8.116,7.632 11,6z" />
+                        <GeometryDrawing Brush="#FFC27D1A" Geometry="F1M5,5L4,5 4,4 5,4z M8,4L5.707,4 7.328,2.379 6.621,1.671 5,3.292 5,1 4,1 4,3.292 2.379,1.671 1.671,2.379 3.292,4 1,4 1,5 3.292,5 1.671,6.621 2.379,7.328 4,5.707 4,8 5,8 5,5.707 6.621,7.328 7.328,6.621 5.707,5 8,5z" />
+                        <GeometryDrawing Brush="#FF00539C" Geometry="F1M15,7L15,11 9,14 5,12 5,9 6,9 6,8.121 6.621,8.742 7.242,8.121 9,9 13,7 11,6 7.291,8.104 8,7.363 8.742,6.621 8.414,6.293 11,5z" />
+                    </DrawingGroup.Children>
+                </DrawingGroup>
+            </DrawingImage.Drawing>
+        </DrawingImage>
+
+        <BooleanToVisibilityConverter x:Key="btv" />
+        <converters:TreeViewLineConverter x:Key="LineConverter"/>
+        
+        <SolidColorBrush x:Key="GridViewColumnHeaderBackground" Color="#121212" />
+        <SolidColorBrush x:Key="GridViewColumnHeaderHoverBackground" Color="#33FFFFFF" />
+        <SolidColorBrush x:Key="GridViewColumnHeaderPressBackground" Color="#66FFFFFF" />
+
+
+        <Style x:Key="GridViewColumnHeaderGripper" TargetType="{x:Type Thumb}">
+            <Setter Property="Canvas.Right" Value="-9"/>
+            <Setter Property="Width" Value="18"/>
+            <Setter Property="Height" Value="{Binding ActualHeight, RelativeSource={RelativeSource TemplatedParent}}"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Thumb}">
+                        <Border Background="Transparent" Padding="{TemplateBinding Padding}">
+                            <Rectangle Fill="#FF686868" HorizontalAlignment="Center" Height="18"  Width="1"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        
+        <Style x:Key="GridViewColumnHeaderStyle1" TargetType="{x:Type GridViewColumnHeader}">
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Background" Value="{StaticResource GridViewColumnHeaderBackground}"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="8,0,4,0"/>
+            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type GridViewColumnHeader}">
+                        <Grid SnapsToDevicePixels="true" Height="32">
+                            <Border x:Name="HeaderBorder" BorderBrush="#FF686868"  Background="{TemplateBinding Background}" BorderThickness="0,0,0,1">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition MaxHeight="7"/>
+                                        <RowDefinition />
+                                    </Grid.RowDefinitions>
+                                    <Rectangle x:Name="UpperHighlight" Fill="#FFE3F7FF" Visibility="Collapsed"/>
+                                    <Border Padding="{TemplateBinding Padding}" Grid.RowSpan="2">
+                                        <ContentPresenter x:Name="HeaderContent" HorizontalAlignment="Left" Margin="0,1,0,1" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                                    </Border>
+                                </Grid>
+                            </Border>
+                            <Canvas>
+                                <Thumb x:Name="PART_HeaderGripper" Style="{StaticResource GridViewColumnHeaderGripper}"/>
+                            </Canvas>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="true">
+                                <Setter Property="Background" TargetName="HeaderBorder" Value="{StaticResource GridViewColumnHeaderHoverBackground}"/>
+                                <Setter Property="Background" TargetName="PART_HeaderGripper" Value="Transparent"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="true">
+                                <Setter Property="Background" TargetName="HeaderBorder" Value="{StaticResource GridViewColumnHeaderPressBackground}"/>
+                                <Setter Property="Visibility" TargetName="PART_HeaderGripper" Value="Hidden"/>
+                                <Setter Property="Margin" TargetName="HeaderContent" Value="1,1,0,0"/>
+                            </Trigger>
+                            <Trigger Property="Height" Value="Auto">
+                                <Setter Property="MinHeight" Value="20"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="false">
+                                <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        
+        <Style x:Key="ExpandCollapseToggleStyle" TargetType="ToggleButton">
+            <Setter Property="Focusable" Value="False"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Grid Width="16" Height="16" SnapsToDevicePixels="True">
+                            <Rectangle Width="14" Height="16" Fill="#FF202020" SnapsToDevicePixels="true" />
+                            <Viewbox Height="10" Width="10" SnapsToDevicePixels="true">
+                                <Path Fill="White" Height="20" Width="20" x:Name="Path" Data="F1 M 5.029297 19.091797 L 14.111328 10 L 5.029297 0.908203 L 5.908203 0.029297 L 15.888672 10 L 5.908203 19.970703 Z" />
+                            </Viewbox>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="False">
+                                <Setter Property="Data" TargetName="Path" Value="F1 M 5.029297 19.091797 L 14.111328 10 L 5.029297 0.908203 L 5.908203 0.029297 L 15.888672 10 L 5.908203 19.970703 Z "/>
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter Property="Data" TargetName="Path" Value="F1 M 18.935547 4.560547 L 19.814453 5.439453 L 10 15.253906 L 0.185547 5.439453 L 1.064453 4.560547 L 10 13.496094 Z "/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="{x:Type GridViewColumnHeader}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type GridViewColumnHeader}">
+                        <Border BorderThickness="0,0,0,1" BorderBrush="Black" Background="#121212">
+                            <TextBlock x:Name="ContentHeader" Text="{TemplateBinding Content}" Padding="5,5,5,0" Width="{TemplateBinding Width}" TextAlignment="Center" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="OverridesDefaultStyle" Value="True" />
+            <Setter Property="Foreground" Value="Black" />
+            <Setter Property="FontFamily" Value="Segoe UI" />
+            <Setter Property="FontSize" Value="12" />
+        </Style>
+
+
+        <!-- TreeViewItem -->
+        <Style x:Key="{x:Type TreeViewItem}" TargetType="{x:Type TreeViewItem}">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Padding" Value="1,0,0,0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type TreeViewItem}">
+                        <Grid Margin="2,0,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition MinWidth="19" Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+
+                            <!-- Connecting Lines -->
+                            <Rectangle x:Name="HorLn" Margin="16,1,0,0" Height="1" Stroke="#808080" SnapsToDevicePixels="True"/>
+                            <Rectangle x:Name="VerLn" Width="1" Stroke="#808080" Margin="0,0,0,0" Grid.RowSpan="2" SnapsToDevicePixels="true" Fill="White"/>
+                            <ToggleButton Margin="0,0,2,0" x:Name="Expander" Style="{StaticResource ExpandCollapseToggleStyle}" IsChecked="{Binding Path=IsExpanded, RelativeSource={RelativeSource TemplatedParent}}" ClickMode="Press"/>
+                            <Border Name="Bd" Grid.Column="1" CornerRadius="2"  Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="True">
+                                <ContentPresenter x:Name="PART_Header" ContentSource="Header" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" MinWidth="20"/>
+                            </Border>
+                            <ItemsPresenter x:Name="ItemsHost" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+
+                            <!-- This trigger changes the connecting lines if the item is the last in the list -->
+                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self}, Converter={StaticResource LineConverter}}" Value="true">
+                                <Setter TargetName="VerLn" Property="Height" Value="2"/>
+                                <Setter TargetName="VerLn" Property="Margin" Value="0,0,0,0"/>
+                                <Setter TargetName="VerLn" Property="VerticalAlignment" Value="Top"/>
+                            </DataTrigger>
+                            <Trigger Property="IsExpanded" Value="false">
+                                <Setter TargetName="ItemsHost" Property="Visibility" Value="Collapsed"/>
+                            </Trigger>
+                            <Trigger Property="HasItems" Value="false">
+                                <Setter TargetName="VerLn" Property="Height" Value="24"/>
+                                <Setter TargetName="VerLn" Property="Margin" Value="0,-12,0,-12"/>
+                                <Setter TargetName="HorLn" Property="Margin" Value="9,0,0,0"/>
+                                <Setter TargetName="Expander" Property="Visibility" Value="Hidden"/>
+                            </Trigger>
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="HasHeader" Value="false"/>
+                                    <Condition Property="Width" Value="Auto"/>
+                                </MultiTrigger.Conditions>
+                                <Setter TargetName="PART_Header" Property="MinWidth" Value="75"/>
+                            </MultiTrigger>
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="HasHeader" Value="false"/>
+                                    <Condition Property="Height" Value="Auto"/>
+                                </MultiTrigger.Conditions>
+                                <Setter TargetName="PART_Header" Property="MinHeight" Value="19"/>
+                            </MultiTrigger>
+                            <Trigger Property="IsSelected" Value="true">
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"/>
+                                <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}"/>
+                            </Trigger>
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="IsSelected" Value="true"/>
+                                    <Condition Property="IsSelectionActive" Value="false"/>
+                                </MultiTrigger.Conditions>
+                                <Setter TargetName="Bd" Property="Background" Value="#990078D7"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </MultiTrigger>
+                            <Trigger Property="IsEnabled" Value="false">
+                                <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        
+        
+        <ControlTemplate x:Key="VsMenuTop" TargetType="MenuItem">
+            <Grid TextBlock.FontSize="14" Height="32">
+                <!-- label, icons, etc. -->
+                <Label Content="{TemplateBinding Header}" Margin="4,2,4,0" Foreground="White" />
+
+                <!-- sub items -->
+                <Popup IsOpen="{TemplateBinding IsSubmenuOpen}" PopupAnimation="Fade" AllowsTransparency="True" Focusable="False">
+                    <Border CornerRadius="4" Background="#4a4a4a" Margin="16">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="16" Opacity="0.35" Direction="270" ShadowDepth="4"/>
+                        </Border.Effect>
+                        <StackPanel IsItemsHost="True" />
+                    </Border>
+                </Popup>
+                <Grid.Style>
+                    <Style TargetType="Grid">
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver"  Value="True">
+                                <Setter Property="Background" Value="#106EBE" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
+            </Grid>
+        </ControlTemplate>
+
+        <!-- style a non-top level menu item -->
+        <ControlTemplate x:Key="VsMenuSub" TargetType="MenuItem">
+            <Border x:Name="border">
+                <DockPanel TextBlock.FontSize="14" x:Name="panel" MinWidth="128" Background="Transparent">
+                    <!-- label, icons, etc. -->
+                    <Image Source="{Binding Icon, RelativeSource={RelativeSource TemplatedParent}}" UseLayoutRounding="True" RenderOptions.BitmapScalingMode="Fant" Width="16" Height="16"  Margin="8,0" />
+                    <Label Content="{TemplateBinding Header}" Foreground="White" Margin="0,2,2,2" />
+                    <Image Visibility="{Binding HasItems, Converter={StaticResource btv}, RelativeSource={RelativeSource TemplatedParent}}" />
+
+                    <!-- sub items -->
+                    <Popup IsOpen="{TemplateBinding IsSubmenuOpen}" AllowsTransparency="True" Focusable="False" Placement="Right" >
+                        <Border CornerRadius="4" Background="Black">
+                            <StackPanel IsItemsHost="True" />
+                        </Border>
+                    </Popup>
+                </DockPanel>
+            </Border>
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsHighlighted" Value="True">
+                    <Setter Property="Background" TargetName="border" Value="#22FFFFFF" />
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Opacity" TargetName="panel" Value="0.5" />
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+
+        <!-- style the separator -->
+        <ControlTemplate x:Key="VsMenuSep" TargetType="Separator">
+            <Border Height="1" Background="#646464" />
+        </ControlTemplate>
+
+        <!-- style the VSOnline -->
+        <!-- style a top level menu item -->
+        <ControlTemplate x:Key="VsOnline" TargetType="MenuItem">
+            <StackPanel TextBlock.FontSize="14px" Height="40" Orientation="Horizontal" Background="#005A9E">
+                <Label Content="{TemplateBinding Header}" Margin="5" Foreground="White" />
+                <Image Height="20" Margin="0,0,5,0" />
+
+                <!-- sub items -->
+                <Popup IsOpen="{TemplateBinding IsSubmenuOpen}" AllowsTransparency="True" Focusable="False">
+                    <Border BorderThickness="1" Background="White" BorderBrush="#E0E0E0">
+                        <StackPanel IsItemsHost="True" />
+                    </Border>
+                </Popup>
+            </StackPanel>
+        </ControlTemplate>
+
+        <!-- some base stuff -->
+        <Style TargetType="Menu">
+            <Setter Property="Background" Value="#0078D7" />
+            <Setter Property="Height" Value="32" />
+        </Style>
+
+    </Window.Resources>
+    
+    <Grid Background="#FF202020">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="256" />
-            <ColumnDefinition Width="5" />
+            <ColumnDefinition Width="0" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <DockPanel Grid.Row="0" Grid.ColumnSpan="3">
-            <Menu DockPanel.Dock="Top" Height="24">
-                <MenuItem Header="_File" Height="24">
-                    <MenuItem Header="_Open" Click="MenuItem_Click_1" />
-                    <MenuItem Header="_Save" />
-                    <Separator />
-                    <MenuItem Header="_Exit" />
-                </MenuItem>
-                <MenuItem Header="_Welp" Height="24">
-                    <MenuItem Header="_Whoami" Click="MenuItem_Click" />
-                </MenuItem>
-            </Menu>
-        </DockPanel>
-
         <TreeView Grid.Row="1" Name="treeView" BorderBrush="Transparent" 
                   BorderThickness="0" TreeViewItem.Expanded="treeView_Expanded" 
+                  VirtualizingStackPanel.IsContainerVirtualizable="True"
+                  VirtualizingStackPanel.IsVirtualizing="True"
+                  VirtualizingStackPanel.ScrollUnit="Pixel"
+                  Background="Transparent"  Foreground="White"
+                  Padding="0,0,0,0"
                   TreeView.SelectedItemChanged="treeView_SelectedItemChanged"
-                  PreviewMouseRightButtonDown="treeView_PreviewMouseRightButtonDown">
-            <TreeView.ItemContainerStyle>
-                <Style TargetType="{x:Type TreeViewItem}">
-                    <Setter Property="Margin" Value="0" />
-                    <Setter Property="KeyboardNavigation.AcceptsReturn" Value="True" />
-                </Style>
-            </TreeView.ItemContainerStyle>
+                  PreviewMouseRightButtonDown="treeView_PreviewMouseRightButtonDown"
+                  AllowDrop="True" Drop="treeView_Drop" PreviewDragOver="treeView_PreviewDragOver">
             <TreeView.Resources>
-                
                 <HierarchicalDataTemplate DataType="{x:Type local:RootTreeView}" ItemsSource="{Binding Path=RegistryHiveTreeViews}">
-                    <StackPanel Orientation="Horizontal" Margin="2">
-                        <Image Height="16" Width="16" Source="{Binding Path=ImageSource, UpdateSourceTrigger=PropertyChanged}" Margin="0,1,8,1" />
-                        <TextBlock Text="{Binding Path=Name}" />
-                    </StackPanel>
+                    <Border Background="Transparent">
+                        <StackPanel Orientation="Horizontal" Margin="2">
+                            <Image Height="16" Width="16" Source="{Binding Path=ImageSource, UpdateSourceTrigger=PropertyChanged}" Margin="0,1,8,1" />
+                            <TextBlock  Foreground="White" Text="{Binding Path=Name}" />
+                        </StackPanel>
+                    </Border>
                 </HierarchicalDataTemplate>
-                
+
                 <HierarchicalDataTemplate DataType="{x:Type local:RegistryHiveTreeView}" ItemsSource="{Binding Path=Children}">
-                    <StackPanel Orientation="Horizontal" Margin="2">
-                        <StackPanel.ContextMenu>
-                            <ContextMenu>
-                                <MenuItem Header="ToDo" />
-                            </ContextMenu>
-                        </StackPanel.ContextMenu>
-                        <Image Height="16" Width="16" Source="Assets/RegistryIcon.png" Margin="0,1,8,1" />
-                        <TextBlock Text="{Binding Path=Name}" />
-                    </StackPanel>
+                    <Border Background="Transparent">
+                        <StackPanel Orientation="Horizontal" Margin="2">
+                            <StackPanel.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Header="ToDo" />
+                                </ContextMenu>
+                            </StackPanel.ContextMenu>
+                            <Image Height="16" Width="16" Source="Assets/RegistryIcon.png" Margin="0,1,8,1" />
+                            <TextBlock Foreground="White" Text="{Binding Path=Name}" />
+                        </StackPanel>
+                    </Border>
                 </HierarchicalDataTemplate>
-                
+
                 <HierarchicalDataTemplate DataType="{x:Type local:RegistryKeyTreeView}" ItemsSource="{Binding Path=Children}">
-                    <StackPanel Orientation="Horizontal" Margin="2">
-                        <Image Height="16" Width="16" Source="{Binding Path=ImageSource, UpdateSourceTrigger=PropertyChanged}" Margin="0,1,8,1" />
-                        <TextBlock Text="{Binding Path=Name}" />
-                    </StackPanel>
+                    <Border Background="Transparent">
+                        <StackPanel Orientation="Horizontal" Margin="2">
+                            <Image Height="16" Width="16" Source="{Binding Path=ImageSource, UpdateSourceTrigger=PropertyChanged}" Margin="0,1,8,1" />
+                            <TextBlock Foreground="White" Text="{Binding Path=Name}" />
+                        </StackPanel>
+                    </Border>
                 </HierarchicalDataTemplate>
             </TreeView.Resources>
         </TreeView>
-        
-        <GridSplitter Grid.Row="1" Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
 
-        <ListView Grid.Column="2" Grid.Row="1" Name="listView" BorderThickness="0" Foreground="Black" MouseDoubleClick="listView_MouseDoubleClick">
+        <ListView Grid.Column="2" Grid.Row="1" Name="listView" BorderThickness="0"
+                  Foreground="White" MouseDoubleClick="listView_MouseDoubleClick"
+                  Background="#FF303030" SizeChanged="listView_SizeChanged">
+            <ListView.Effect>
+                <DropShadowEffect Direction="180" ShadowDepth="0" BlurRadius="10" Opacity="0.45" />
+            </ListView.Effect>
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
-                    <Setter Property="Height" Value="24" />
-                    <Setter Property="TextBlock.TextWrapping" Value="Wrap" />
-                    <Setter Property="VerticalContentAlignment" Value="Center" />
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="ListViewItem">
+                                <Border CornerRadius="4" SnapsToDevicePixels="True"
+                                        BorderThickness="{TemplateBinding BorderThickness}" 
+                                        BorderBrush="{TemplateBinding BorderBrush}" 
+                                        Background="{TemplateBinding Background}">
+                                    <Border Name="InnerBorder" CornerRadius="1" BorderThickness="1">
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="20" />
+                                                <RowDefinition />
+                                            </Grid.RowDefinitions>
+                                            <Rectangle Name="UpperHighlight" Visibility="Collapsed" Fill="#75FFFFFF" />
+                                            <GridViewRowPresenter Grid.RowSpan="2" 
+                                                VerticalAlignment="{TemplateBinding VerticalContentAlignment}" 
+                                                SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                                        </Grid>
+                                    </Border>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter Property="Background" Value="#0078d7"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
                 </Style>
             </ListView.ItemContainerStyle>
             <ListView.Resources>
                 <converters:DataTypeEnumToStringConverter x:Key="DataTypeEnumToStringConverter" />
                 <converters:ByteArrayToStringConverter x:Key="ByteArrayToStringConverter" />
                 <DataTemplate x:Key="Templ">
-                    <TextBlock Padding="4,0,0,0" HorizontalAlignment="Left" Text="{Binding}" Foreground="Black" />
+                    <TextBlock Padding="4,0,0,0" HorizontalAlignment="Left" Text="{Binding}" Foreground="White" />
                 </DataTemplate>
-                <Style x:Key="HeaderStyle" TargetType="GridViewColumnHeader">
-                    <Setter Property="Padding" Value="4" />
-                    <Setter Property="HorizontalContentAlignment" Value="Left"/>
-                </Style>
             </ListView.Resources>
             <ListView.View>
-                <GridView>
-                    <GridViewColumn HeaderTemplate="{StaticResource Templ}" HeaderContainerStyle="{StaticResource HeaderStyle}" Header="Name" Width="200" DisplayMemberBinding="{Binding Name}" />
-                    <GridViewColumn HeaderTemplate="{StaticResource Templ}" HeaderContainerStyle="{StaticResource HeaderStyle}" Header="Type" Width="160" DisplayMemberBinding="{Binding DataTypeEnum, Converter={StaticResource DataTypeEnumToStringConverter}}" />
-                    <GridViewColumn HeaderTemplate="{StaticResource Templ}" HeaderContainerStyle="{StaticResource HeaderStyle}" Header="Data" Width="400">
+                <GridView AllowsColumnReorder="False">
+                    <GridViewColumn HeaderTemplate="{StaticResource Templ}" HeaderContainerStyle="{StaticResource GridViewColumnHeaderStyle1}"
+                                    Header="Name" Width="200" DisplayMemberBinding="{Binding Name}" />
+                    <GridViewColumn HeaderTemplate="{StaticResource Templ}" HeaderContainerStyle="{StaticResource GridViewColumnHeaderStyle1}" 
+                                    Header="Type" Width="160" DisplayMemberBinding="{Binding DataTypeEnum, Converter={StaticResource DataTypeEnumToStringConverter}}" />
+                    <GridViewColumn HeaderTemplate="{StaticResource Templ}" HeaderContainerStyle="{StaticResource GridViewColumnHeaderStyle1}" 
+                                    Header="Data" x:Name="DataGVC" Width="400">
                         <GridViewColumn.DisplayMemberBinding>
                             <MultiBinding Converter="{StaticResource ByteArrayToStringConverter}">
                                 <Binding Path="Data" />
@@ -107,6 +467,73 @@
                     </GridViewColumn>
                 </GridView>
             </ListView.View>
+        </ListView>
+
+        <GridSplitter Grid.Row="1" Grid.Column="1" Width="8" Margin="-4,0,-4,0" HorizontalAlignment="Left"
+                      Background="Transparent" />
+
+        <DockPanel Grid.Row="0" Grid.ColumnSpan="3">
+            <DockPanel.Effect>
+                <DropShadowEffect Direction="270" ShadowDepth="0" BlurRadius="10" Opacity=".45"/>
+            </DockPanel.Effect>
+            <StackPanel Height="72">
+                <Menu IsMainMenu="True"  DockPanel.Dock="Top" Height="32" Background="#1b1b1b" Foreground="White">
+                    <MenuItem Header="_File" Padding="8,0"  Height="32" Template="{StaticResource VsMenuTop}">
+                        <MenuItem Header="_Open" Click="MenuItem_Click_1" Template="{StaticResource VsMenuSub}" Icon="{StaticResource OpenFileImage}" />
+                        <MenuItem Header="_Close" Template="{StaticResource VsMenuSub}" Icon="{StaticResource CloseImage}" IsEnabled="False" />
+                        <Separator Template="{StaticResource VsMenuSep}" />
+                        <MenuItem Header="_Exit" Template="{StaticResource VsMenuSub}" Icon="{StaticResource ExitImage}" />
+                    </MenuItem>
+                    <MenuItem Header="_Edit" Padding="8,0" Height="32" Template="{StaticResource VsMenuTop}">
+                        <MenuItem Header="Create _Value" Click="MenuItem_Click" Template="{StaticResource VsMenuSub}" Icon="{StaticResource NewFieldImage}" />
+                    </MenuItem>
+                </Menu>
+                <Grid Background="#3b3b3b">
+                    <TextBox Visibility="Visible"  x:Name="currentPathTxt" Text="Computer" BorderThickness="1" 
+                             Padding="36,6,8,2" Margin="12,0,12,0" Foreground="White" Background="#2b2b2b"  Height="32" IsReadOnly="False" BorderBrush="#FF5B5B5B" 
+                             TextChanged="currentPathTxt_TextChanged" PreviewTextInput="currentPathTxt_PreviewTextInput" 
+                             LostFocus="currentPathTxt_LostFocus" GotFocus="currentPathTxt_GotFocus" PreviewKeyDown="currentPathTxt_PreviewKeyDown" KeyUp="currentPathTxt_KeyUp" />
+                    <Image x:Name="selectedIconImage" Height="16" Width="16" Margin="24,12,0,12" HorizontalAlignment="Left" />
+                </Grid>
+            </StackPanel>
+        </DockPanel>
+
+        <ListView Grid.RowSpan="2" VerticalAlignment="Top"  Name="listViewSuggestion" BorderThickness="0"
+                  Foreground="White" Visibility="Hidden"
+                  Background="#FF303030" Grid.ColumnSpan="3" MaxHeight="192" Margin="12,68,12,12">
+            <ListView.Effect>
+                <DropShadowEffect Direction="180" ShadowDepth="0" BlurRadius="10" Opacity="0.45" />
+            </ListView.Effect>
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="ListViewItem">
+                                <Border CornerRadius="4" SnapsToDevicePixels="True"
+                                        BorderThickness="0" 
+                                        BorderBrush="{TemplateBinding BorderBrush}" 
+                                        Background="{TemplateBinding Background}" Margin="0">
+                                    <Border Name="InnerBorder" CornerRadius="1" BorderThickness="0">
+                                        <Grid Height="24">
+                                            <TextBlock Margin="36,4" Text="{Binding}"  Height="24" />
+                                        </Grid>
+                                    </Border>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter Property="Background" Value="#0078d7"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </ListView.ItemContainerStyle>
+            <ListView.Resources>
+                <DataTemplate x:Key="Templ">
+                    <TextBlock Padding="4,0,0,0" HorizontalAlignment="Left" Text="{Binding}" Foreground="White" />
+                </DataTemplate>
+            </ListView.Resources>
         </ListView>
     </Grid>
 </Window>

@@ -6,16 +6,19 @@
              xmlns:local="clr-namespace:UWPSettingsEditor.Controls"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid Height="24" >
+    <Grid Height="32" >
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <TextBlock Grid.Column="0" Text="Boolean Value:" VerticalAlignment="Center" Margin="8,0" />
-        <ComboBox Grid.Column="1" x:Name="cmBox">
-            <ComboBoxItem Tag="true">True</ComboBoxItem>
-            <ComboBoxItem Tag="false">False</ComboBoxItem>
+        <TextBlock Grid.Column="0" Text="Boolean Value:" VerticalAlignment="Center" Margin="0,0,8,0" />
+        <ComboBox Grid.Column="1" x:Name="cmBox" Height="32">
+            <ComboBoxItem Tag="true">
+                <TextBlock Padding="4,0,0,0">True</TextBlock></ComboBoxItem>
+            <ComboBoxItem Tag="false">
+                <TextBlock Padding="4,0,0,0">False</TextBlock>
+            </ComboBoxItem>
         </ComboBox>
     </Grid>
 </UserControl>

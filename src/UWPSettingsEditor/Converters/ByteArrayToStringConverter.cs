@@ -23,8 +23,11 @@ namespace UWPSettingsEditor.Converters
 
         private string DisplayData(byte[] dataRaw, DataTypeEnum dataType)
         {
-            if ((int)dataType > 256 && (int)dataType < 294)
+            if ((int)dataType > 0x5f5e_100 && (int)dataType < 0x5f5e_126)
             {
+                if (dataRaw.Length < 8)
+                    return "(invalid data)";
+
                 var splittedDataRaw = MethodHelpers.SplitDataRaw(dataRaw);
                 var data = splittedDataRaw.Value;
                 //var timestamp = DateTimeOffset.FromFileTime(BitConverter.ToInt64(timestamp, 0));
@@ -47,10 +50,10 @@ namespace UWPSettingsEditor.Converters
                     case DataTypeEnum.RegUwpUint64:
                         return GetUInt64(data).ToString();
                     case DataTypeEnum.RegUwpSingle:
-                        return GetSingle(data).ToString();
+                        return GetSingle(data).ToString("G9");
                     case DataTypeEnum.RegUwpDouble:
-                        return GetDouble(data).ToString();
-                    case DataTypeEnum.RegUwpChar16:
+                        return GetDouble(data).ToString("G17");
+                    case DataTypeEnum.RegUwpChar:
                         return "'" + GetChar(data).ToString() + "'";
                     case DataTypeEnum.RegUwpBoolean:
                         return GetBoolean(data).ToString();
@@ -72,7 +75,6 @@ namespace UWPSettingsEditor.Converters
                         return GetRect(data).ToString();
                     case DataTypeEnum.RegUwpArrayByte:
                         return PrettyPrintArray(GetArray(data.Length, 1, i => GetByte(data, i))).ReplaceMultilineWithSymbols();
-                    // PrettyPrintArray(data, 1, i => GetByte(data, i).ToString("X2"));
                     case DataTypeEnum.RegUwpArrayInt16:
                         return PrettyPrintArray(GetArray(data.Length, 2, i => GetInt16(data, i))).ReplaceMultilineWithSymbols();
                     case DataTypeEnum.RegUwpArrayUint16:
@@ -117,35 +119,37 @@ namespace UWPSettingsEditor.Converters
                 {
                     case DataTypeEnum.RegSz:
                     case DataTypeEnum.RegExpandSz:
-                        break;
+                        return GetString(dataRaw).ReplaceMultilineWithSymbols();
                     case DataTypeEnum.RegDword:
-                        break;
+                        {
+                            var dword = Deserializer.GetUInt32(dataRaw);
+                            return $"0x{dword:X8} ({dword})";
+                        }
                     case DataTypeEnum.RegDwordBigEndian:
-                        break;
-                    case DataTypeEnum.RegLink:
-                        break;
+                        {
+                            var dword = Deserializer.GetUInt32BigEndian(dataRaw);
+                            return $"0x{dword:X8} ({dword})";
+                        }
                     case DataTypeEnum.RegMultiSz:
-                        break;
-                    case DataTypeEnum.RegResourceList:
-                        break;
-                    case DataTypeEnum.RegFullResourceDescription:
-                        break;
-                    case DataTypeEnum.RegResourceRequirementsList:
-                        break;
+                        return GetString(dataRaw).ReplaceMultilineWithSymbols();
                     case DataTypeEnum.RegQword:
-                        break;
-                    case DataTypeEnum.RegFileTime:
-                        break;
+                        {
+                            var qword = Deserializer.GetUInt64(dataRaw);
+                            return $"0x{qword:X16} ({qword})";
+                        }
                     case DataTypeEnum.RegNone:
+                        return "";
+                    case DataTypeEnum.RegLink:
+                    case DataTypeEnum.RegResourceList:
+                    case DataTypeEnum.RegFullResourceDescription:
+                    case DataTypeEnum.RegResourceRequirementsList:
+                    case DataTypeEnum.RegFileTime:
                     case DataTypeEnum.RegBinary:
-                        break;
                     case DataTypeEnum.RegUnknown:
-                        break;
+                        return PrettyPrintArray(dataRaw).ReplaceMultilineWithSymbols();
                     default:
-                        break;
+                        return PrettyPrintArray(dataRaw).ReplaceMultilineWithSymbols();
                 }
-
-                return "-TODO-";
             }
         }
     }

@@ -8,11 +8,13 @@
         ResizeMode="NoResize"
         SizeToContent="Height"
         Title="Edit Value" 
+        Background="#3b3b3b"
+        Foreground="White"
         Height="250" Width="400" 
         WindowStartupLocation="CenterOwner"
         MinHeight="250" MinWidth="400" WindowStyle="ToolWindow">
     <Grid>
-        <Grid HorizontalAlignment="Stretch" Margin="12,12,12,48">
+        <Grid HorizontalAlignment="Stretch" Margin="12,12,12,60">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="8" />
@@ -24,12 +26,19 @@
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
-            <TextBlock Grid.Column="0" Height="20" HorizontalAlignment="Center" Text="Value name:" />
-            <TextBox x:Name="ValueNameTextBox" Grid.Column="2" Height="20" />
+            <TextBlock Grid.Column="0" Margin="0,2,0,0" Height="20" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Value name:" />
+            
+            <TextBox x:Name="ValueNameTextBox" Padding="8,6,8,2" IsReadOnly="True" Background="#2b2b2b" 
+                     BorderBrush="#FF5B5B5B" BorderThickness="1" Foreground="White" Text="Value" Grid.Column="2" Height="32" />
 
+            <TextBlock x:Name="unimplementedTxt" Text="Not implemented yet" Visibility="Collapsed"
+                       VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Row="2" Grid.ColumnSpan="3" />
+            
             <Grid x:Name="ContainerGrid" Grid.Row="2" Grid.ColumnSpan="3" />
         </Grid>
-        <Button Content="Cancel" Margin="0,0,12,12" HorizontalAlignment="Right" Width="72" Height="24" VerticalAlignment="Bottom" Click="CancelButton_Click" />
-        <Button Content="OK" Margin="0,0,96,12" HorizontalAlignment="Right" Width="72" Height="24" VerticalAlignment="Bottom" Click="OKButton_Click" />
+        <Button x:Name="CancelButton" Background="#4F4F4F" Content="Cancel" Margin="0,0,12,12"
+                HorizontalAlignment="Right" Width="72" Height="32" VerticalAlignment="Bottom" Click="CancelButton_Click" />
+        <Button x:Name="OkButton" Content="Add" Margin="0,0,92,12" HorizontalAlignment="Right" 
+                Width="72" Height="32" VerticalAlignment="Bottom" Click="OKButton_Click" />
     </Grid>
 </Window>

@@ -65,8 +65,8 @@ namespace UWPSettingsEditor.Converters
                     return "REG_UWP_SINGLE";
                 case DataTypeEnum.RegUwpDouble:
                     return "REG_UWP_DOUBLE";
-                case DataTypeEnum.RegUwpChar16:
-                    return "REG_UWP_CHAR16";
+                case DataTypeEnum.RegUwpChar:
+                    return "REG_UWP_CHAR";
                 case DataTypeEnum.RegUwpBoolean:
                     return "REG_UWP_BOOLEAN";
                 case DataTypeEnum.RegUwpString:

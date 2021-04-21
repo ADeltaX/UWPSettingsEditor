@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Windows.Controls;
 using UWPSettingsEditor.Interfaces;
 using static UWPSettingsEditor.UWPDeserializer;
@@ -13,7 +14,15 @@ namespace UWPSettingsEditor.Controls
     {
         private DateTimeOffset _timestamp;
 
-        public StringComponent() => InitializeComponent();
+        public StringComponent()
+        {
+            InitializeComponent();
+            _timestamp = DateTimeOffset.Now;
+        }
+
+        public bool IsDataValid => true;
+
+        public event PropertyChangedEventHandler PropertyChanged;
 
         public byte[] GetValueData() => FromString(TextBox.Text, _timestamp);
 

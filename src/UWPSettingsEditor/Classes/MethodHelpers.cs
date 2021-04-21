@@ -55,8 +55,8 @@ namespace UWPSettingsEditor
         {
             var repStr = str.Replace("\r\n", "\\r\\n").Replace("\r", "\\r").Replace("\n", "\\n");
 
-            if (repStr.Length > SUBSTRING_ELLIPSIS_LENGTH)
-                repStr = repStr.Substring(0, SUBSTRING_ELLIPSIS_LENGTH) + "...";
+            if (repStr.Length + 3 > SUBSTRING_ELLIPSIS_LENGTH)
+                repStr = repStr.Substring(0, SUBSTRING_ELLIPSIS_LENGTH - 3) + "...";
 
             return repStr;
         }
